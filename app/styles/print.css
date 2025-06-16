@@ -1,0 +1,27 @@
+@media print {
+  /* Hide everything except the poster */
+  body > *:not(.print-only) {
+    display: none !important;
+  }
+
+  /* Show only the poster */
+  .print-only {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Reset any background colors and shadows */
+  * {
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure page breaks don't occur within the poster */
+  .moscow-poster {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+} 

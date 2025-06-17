@@ -48,7 +48,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 						style={{
 							width: '400px',
 							left: '97px',
-							top: '265px'
+							top: '240px'
 						}}
 					>
 						<div className="flex justify-center">
@@ -184,15 +184,30 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 				{generateDateContent()}
 
 				{/* Основной текст */}
-				<div className="absolute w-full top-[420px] text-center">
-					<p className="text-[32px] leading-[39px]">
+				<div
+					className="absolute w-full text-center"
+					style={{
+						top: isSameTime() ? '380px' : '420px'
+					}}
+				>
+					<p
+						className="text-[32px]"
+						style={{
+							lineHeight: isSameTime() ? '42px' : '39px'
+						}}
+					>
 						состоятся поквартирные обходы
 						<br />
 						сотрудников платформы
 						<br />
 						Правительства Москвы
 					</p>
-					<p className="text-[32px] leading-[39px] mt-1">
+					<p
+						className="text-[32px] mt-1"
+						style={{
+							lineHeight: isSameTime() ? '42px' : '39px'
+						}}
+					>
 						<span className="font-bold">«Электронный дом»</span>
 						<br />
 						с целью <span className="font-bold">сбора бюллетеней</span> в

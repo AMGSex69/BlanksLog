@@ -18,25 +18,17 @@ interface TextContentProps {
 export default function MoscowPoster({ dates, phone }: TextContentProps) {
 	// Проверяем, идут ли даты подряд
 	const areDatesConsecutive = (date1: string, date2: string) => {
-		// Разбиваем строки дат на компоненты
 		const [day1, month1] = date1.toLowerCase().split(' ');
 		const [day2, month2] = date2.toLowerCase().split(' ');
-
-		// Если месяцы разные, даты точно не последовательные
 		if (month1 !== month2) return false;
-
-		// Проверяем, что дни идут последовательно
 		return parseInt(day2) - parseInt(day1) === 1;
 	};
 
 	// Проверяем, одинаковое ли время
 	const isSameTime = () => {
 		if (!dates.second) return false;
-
-		// Если у второй даты не указано время, используем время первой даты
 		const secondTimeStart = dates.second.timeStart || dates.first.timeStart;
 		const secondTimeEnd = dates.second.timeEnd || dates.first.timeEnd;
-
 		return dates.first.timeStart === secondTimeStart &&
 			dates.first.timeEnd === secondTimeEnd;
 	};
@@ -51,7 +43,6 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 	// Получаем время для второй даты (если не указано, используем время первой)
 	const getSecondDateTime = () => {
 		if (!dates.second) return { timeStart: '', timeEnd: '' };
-
 		return {
 			timeStart: dates.second.timeStart || dates.first.timeStart,
 			timeEnd: dates.second.timeEnd || dates.first.timeEnd
@@ -76,9 +67,8 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 						}}
 					>
 						<div className="flex justify-center">
-							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+							<div className="font-bold text-[36px] leading-[44px] whitespace-nowrap relative poster-date-underline">
 								{dates.first.date.toLowerCase()}-{dates.second!.date.toLowerCase()}
-								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 							</div>
 						</div>
 						<div
@@ -103,9 +93,8 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 						}}
 					>
 						<div className="flex justify-center">
-							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+							<div className="font-bold text-[36px] leading-[44px] whitespace-nowrap relative poster-date-underline">
 								{dates.first.date.toLowerCase()} и {dates.second!.date.toLowerCase()}
-								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 							</div>
 						</div>
 						<div
@@ -133,9 +122,8 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 					}}
 				>
 					<div className="flex justify-center">
-						<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+						<div className="font-bold text-[36px] leading-[44px] whitespace-nowrap relative poster-date-underline">
 							{dates.first.date.toLowerCase()}
-							<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 						</div>
 					</div>
 					<div
@@ -171,9 +159,8 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 									height: '26px',
 								}}
 							>
-								<div className="relative whitespace-nowrap">
+								<div className="whitespace-nowrap relative poster-date-underline">
 									{dates.first.date}
-									<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 								</div>
 							</div>
 						</div>
@@ -202,9 +189,8 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 									height: '26px',
 								}}
 							>
-								<div className="relative whitespace-nowrap">
+								<div className="whitespace-nowrap relative poster-date-underline">
 									{dates.second!.date}
-									<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 								</div>
 							</div>
 						</div>
@@ -226,7 +212,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 	};
 
 	return (
-		<div className="relative w-[595.3px] h-[841.89px]">
+		<div className="moscow-poster-container relative w-[595.3px] h-[841.89px]">
 			<div className="absolute inset-0">
 				<Image
 					src="/images/header-reference.png"

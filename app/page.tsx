@@ -7,12 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Printer, RotateCcw, X } from "lucide-react";
+import { Printer, RotateCcw, X, Download } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 
 export default function Home() {
 	const [dates, setDates] = useState({
@@ -90,9 +93,180 @@ export default function Home() {
 		setPhone('8 (499) 652-62-11');
 	};
 
-	const handlePrint = () => {
-		window.print();
+	// Функция для экспорта в PDF
+	const handleExportPDF = async () => {
+		const posterElement = document.querySelector('.moscow-poster-container');
+		if (!posterElement) return;
+
+		try {
+			// Временно добавляем класс для увеличенного отступа в PDF
+			const dateElements = posterElement.querySelectorAll('.poster-date-underline');
+
+			dateElements.forEach((el) => {
+				el.classList.add('pdf-export-mode');
+			});
+
+			const canvas = await html2canvas(posterElement as HTMLElement, {
+				scale: 3,
+				useCORS: true,
+				allowTaint: true,
+				backgroundColor: '#ffffff',
+				logging: false,
+				width: posterElement.scrollWidth,
+				height: posterElement.scrollHeight,
+				scrollX: 0,
+				scrollY: 0,
+				foreignObjectRendering: false
+			});
+
+			// Убираем временный класс
+			dateElements.forEach((el) => {
+				el.classList.remove('pdf-export-mode');
+			});
+
+			const imgData = canvas.toDataURL('image/png');
+			const pdf = new jsPDF({
+				orientation: 'portrait',
+				unit: 'mm',
+				format: 'a4'
+			});
+
+			const pageWidth = 210; // A4 width in mm
+			const pageHeight = 297; // A4 height in mm
+
+			// Рассчитываем размеры так, чтобы плакат поместился на одну страницу
+			const canvasRatio = canvas.width / canvas.height;
+			const pageRatio = pageWidth / pageHeight;
+
+			let imgWidth, imgHeight;
+
+			if (canvasRatio > pageRatio) {
+				// Изображение шире - масштабируем по ширине
+				imgWidth = pageWidth - 2; // Оставляем отступы 1мм с каждой стороны
+				imgHeight = imgWidth / canvasRatio;
+			} else {
+				// Изображение выше - масштабируем по высоте
+				imgHeight = pageHeight - 2; // Оставляем отступы 1мм сверху и снизу
+				imgWidth = imgHeight * canvasRatio;
+			}
+
+			// Центрируем изображение на странице
+			const x = (pageWidth - imgWidth) / 2;
+			const y = (pageHeight - imgHeight) / 2;
+
+			// Добавляем изображение только на одну страницу
+			pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+
+			pdf.save('плакат-москва.pdf');
+		} catch (error) {
+			console.error('Ошибка при создании PDF:', error);
+			alert('Произошла ошибка при создании PDF файла');
+		}
 	};
+
+	// Улучшенная функция печати
+	const handlePrint = () => {
+		const posterElement = document.querySelector('.moscow-poster-container');
+		if (!posterElement) return;
+
+		const printWindow = window.open('', '_blank');
+		if (!printWindow) return;
+
+		printWindow.document.write(`
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<title>Плакат для печати</title>
+				<style>
+					* { margin: 0; padding: 0; box-sizing: border-box; }
+					body { 
+						font-family: Arial, sans-serif; 
+						background: white;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						min-height: 100vh;
+						padding: 20px;
+					}
+					.poster-container {
+						width: 100%;
+						max-width: 800px;
+						margin: 0 auto;
+					}
+					@media print {
+						body { padding: 0; }
+						.poster-container { 
+							width: 100%; 
+							max-width: none;
+							page-break-inside: avoid;
+						}
+					}
+				</style>
+			</head>
+			<body>
+				<div class="poster-container">
+					${posterElement.innerHTML}
+				</div>
+			</body>
+			</html>
+		`);
+
+		printWindow.document.close();
+		printWindow.focus();
+
+		setTimeout(() => {
+			printWindow.print();
+			printWindow.close();
+		}, 500);
+	};
+
+	// Функция для экспорта в PNG высокого качества
+	const handleExportPNG = async () => {
+		const element = document.getElementById('moscow-poster');
+
+		if (!element) {
+			alert('Элемент плаката не найден!');
+			return;
+		}
+
+		try {
+			// Временно добавляем класс для увеличенного отступа
+			const dateElements = element.querySelectorAll('.poster-date-underline');
+
+			dateElements.forEach((el) => {
+				el.classList.add('export-mode');
+			});
+
+			// Создаем canvas с высоким разрешением для качественной печати
+			const canvas = await html2canvas(element, {
+				scale: 2, // Высокое разрешение для качественной печати
+				useCORS: true,
+				allowTaint: true,
+				backgroundColor: '#ffffff',
+				width: element.offsetWidth,
+				height: element.offsetHeight,
+			});
+
+			// Убираем временный класс
+			dateElements.forEach((el) => {
+				el.classList.remove('export-mode');
+			});
+
+			// Создаем ссылку для скачивания
+			const link = document.createElement('a');
+			link.download = 'плакат-москва.png';
+			link.href = canvas.toDataURL('image/png');
+
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} catch (error) {
+			console.error('Ошибка при экспорте PNG:', error);
+			alert('Ошибка при создании PNG: ' + (error instanceof Error ? error.message : String(error)));
+		}
+	};
+
+
 
 	return (
 		<div className="min-h-screen bg-gray-100 p-8">
@@ -138,6 +312,8 @@ export default function Home() {
 														mode="single"
 														onSelect={(date) => handleDateChange(date, 'first')}
 														locale={ru}
+														today={new Date()}
+														showOutsideDays={true}
 													/>
 												</PopoverContent>
 											</Popover>
@@ -236,6 +412,8 @@ export default function Home() {
 														mode="single"
 														onSelect={(date) => handleDateChange(date, 'second')}
 														locale={ru}
+														today={new Date()}
+														showOutsideDays={true}
 													/>
 												</PopoverContent>
 											</Popover>
@@ -324,10 +502,20 @@ export default function Home() {
 									/>
 								</div>
 
-								<Button onClick={handlePrint} className="w-full">
-									<Printer className="w-4 h-4 mr-2" />
-									Распечатать
-								</Button>
+								<div className="grid grid-cols-3 gap-3">
+									<Button onClick={handlePrint} variant="outline">
+										<Printer className="w-4 h-4 mr-2" />
+										Печать
+									</Button>
+									<Button onClick={handleExportPNG} variant="outline">
+										<Download className="w-4 h-4 mr-2" />
+										PNG
+									</Button>
+									<Button onClick={handleExportPDF}>
+										<Download className="w-4 h-4 mr-2" />
+										PDF
+									</Button>
+								</div>
 							</CardContent>
 						</Card>
 					</div>
@@ -340,7 +528,9 @@ export default function Home() {
 							</CardHeader>
 							<CardContent>
 								<div className="flex justify-center">
-									<MoscowPoster dates={dates} phone={phone} />
+									<div id="moscow-poster" className="moscow-poster-container">
+										<MoscowPoster dates={dates} phone={phone} />
+									</div>
 								</div>
 							</CardContent>
 						</Card>

@@ -92,3 +92,74 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Надежное подчеркивание через border-bottom с фиксированным отступом */
+.moscow-poster-container .poster-date-underline {
+  text-decoration: none !important;
+  border-bottom: 2px solid #000000 !important;
+  padding-bottom: 4px !important;
+  display: inline-block !important;
+}
+
+/* Для печати и PDF - увеличенный отступ */
+@media print {
+  .moscow-poster-container .poster-date-underline {
+    text-decoration: none !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 20px !important;
+    display: inline-block !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+}
+
+/* Класс для экспорта PNG с увеличенным отступом */
+.moscow-poster-container .poster-date-underline.export-mode {
+  padding-bottom: 15px !important;
+}
+
+/* Класс для экспорта PDF с большим отступом */
+.moscow-poster-container .poster-date-underline.pdf-export-mode {
+  padding-bottom: 20px !important;
+}
+
+/* Кастомные стили для календаря */
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #0ea5e9;
+  --rdp-background-color: #f8fafc;
+  --rdp-accent-color-dark: #0284c7;
+  --rdp-background-color-dark: #1e293b;
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  --rdp-outline-selected: 2px solid var(--rdp-accent-color);
+  margin: 1em;
+}
+
+/* Сегодняшняя дата (всегда яркая, даже если в другом месяце) */
+.rdp .rdp-day_today {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  font-weight: bold !important;
+  border-radius: 6px !important;
+  opacity: 1 !important;
+}
+
+/* Дни других месяцев (делаем темнее, НО НЕ сегодняшнюю дату) */
+.rdp .rdp-day_outside:not(.rdp-day_today) {
+  color: #94a3b8 !important;
+  opacity: 0.4 !important;
+}
+
+/* Выбранная дата */
+.rdp .rdp-day_selected {
+  background-color: #0ea5e9 !important;
+  color: white !important;
+  font-weight: bold !important;
+  border-radius: 6px !important;
+}
+
+/* Ховер эффект */
+.rdp .rdp-day:hover:not(.rdp-day_selected):not(.rdp-day_today) {
+  background-color: #e2e8f0 !important;
+  border-radius: 6px !important;
+}

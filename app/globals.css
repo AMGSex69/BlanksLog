@@ -123,6 +123,11 @@ body {
   padding-bottom: 20px !important;
 }
 
+/* Класс для режима печати */
+.moscow-poster-container .poster-date-underline.print-mode {
+  padding-bottom: 20px !important;
+}
+
 /* Кастомные стили для календаря */
 .rdp {
   --rdp-cell-size: 40px;

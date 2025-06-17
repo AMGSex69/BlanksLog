@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MoscowPoster from "./components/MoscowPoster";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Printer, RotateCcw, X, Download } from "lucide-react";
+import { RotateCcw, X, Download } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Clock } from "lucide-react";
@@ -32,7 +32,32 @@ export default function Home() {
 	});
 	const [phone, setPhone] = useState('8 (499) 652-62-11');
 
+	// Загрузка сохраненного состояния при монтировании компонента
+	useEffect(() => {
+		const savedData = localStorage.getItem('posterGeneratorData');
+		if (savedData) {
+			try {
+				const parsedData = JSON.parse(savedData);
+				if (parsedData.dates) {
+					setDates(parsedData.dates);
+				}
+				if (parsedData.phone) {
+					setPhone(parsedData.phone);
+				}
+			} catch (error) {
+				console.error('Ошибка при загрузке сохраненных данных:', error);
+			}
+		}
+	}, []);
 
+	// Сохранение состояния при изменении данных
+	useEffect(() => {
+		const dataToSave = {
+			dates,
+			phone
+		};
+		localStorage.setItem('posterGeneratorData', JSON.stringify(dataToSave));
+	}, [dates, phone]);
 
 	// Обработчик быстрого выбора времени
 	const handleQuickTimeSelect = (dayKey: 'first' | 'second', timeType: 'start' | 'end', value: string) => {
@@ -91,6 +116,8 @@ export default function Home() {
 			}
 		});
 		setPhone('8 (499) 652-62-11');
+		// Очищаем сохраненные данные
+		localStorage.removeItem('posterGeneratorData');
 	};
 
 	// Функция для экспорта в PDF
@@ -164,61 +191,7 @@ export default function Home() {
 		}
 	};
 
-	// Улучшенная функция печати
-	const handlePrint = () => {
-		const posterElement = document.querySelector('.moscow-poster-container');
-		if (!posterElement) return;
 
-		const printWindow = window.open('', '_blank');
-		if (!printWindow) return;
-
-		printWindow.document.write(`
-			<!DOCTYPE html>
-			<html>
-			<head>
-				<title>Плакат для печати</title>
-				<style>
-					* { margin: 0; padding: 0; box-sizing: border-box; }
-					body { 
-						font-family: Arial, sans-serif; 
-						background: white;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						min-height: 100vh;
-						padding: 20px;
-					}
-					.poster-container {
-						width: 100%;
-						max-width: 800px;
-						margin: 0 auto;
-					}
-					@media print {
-						body { padding: 0; }
-						.poster-container { 
-							width: 100%; 
-							max-width: none;
-							page-break-inside: avoid;
-						}
-					}
-				</style>
-			</head>
-			<body>
-				<div class="poster-container">
-					${posterElement.innerHTML}
-				</div>
-			</body>
-			</html>
-		`);
-
-		printWindow.document.close();
-		printWindow.focus();
-
-		setTimeout(() => {
-			printWindow.print();
-			printWindow.close();
-		}, 500);
-	};
 
 	// Функция для экспорта в PNG высокого качества
 	const handleExportPNG = async () => {
@@ -502,11 +475,7 @@ export default function Home() {
 									/>
 								</div>
 
-								<div className="grid grid-cols-3 gap-3">
-									<Button onClick={handlePrint} variant="outline">
-										<Printer className="w-4 h-4 mr-2" />
-										Печать
-									</Button>
+								<div className="grid grid-cols-2 gap-3">
 									<Button onClick={handleExportPNG} variant="outline">
 										<Download className="w-4 h-4 mr-2" />
 										PNG

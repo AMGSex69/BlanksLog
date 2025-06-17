@@ -168,3 +168,14 @@ body {
   background-color: #e2e8f0 !important;
   border-radius: 6px !important;
 }
+
+/* Специальные стили для экспорта - сдвиг времени выше для одинакового времени/одной даты */
+.moscow-poster-container.export-mode .single-date-time,
+.moscow-poster-container.export-mode .same-time {
+  margin-top: 15px !important;
+}
+
+.moscow-poster-container.pdf-export-mode .single-date-time,
+.moscow-poster-container.pdf-export-mode .same-time {
+  margin-top: 15px !important;
+}

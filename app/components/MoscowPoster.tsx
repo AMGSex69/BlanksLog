@@ -72,7 +72,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 							</div>
 						</div>
 						<div
-							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap same-time"
 							style={{
 								marginTop: '20px'
 							}}
@@ -98,7 +98,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 							</div>
 						</div>
 						<div
-							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap same-time"
 							style={{
 								marginTop: '20px'
 							}}
@@ -127,7 +127,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 						</div>
 					</div>
 					<div
-						className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+						className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap single-date-time"
 						style={{
 							marginTop: '20px'
 						}}

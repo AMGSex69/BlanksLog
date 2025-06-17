@@ -126,8 +126,9 @@ export default function Home() {
 		if (!posterElement) return;
 
 		try {
-			// Временно добавляем класс для увеличенного отступа в PDF
+			// Временно добавляем классы для экспорта в PDF
 			const dateElements = posterElement.querySelectorAll('.poster-date-underline');
+			posterElement.classList.add('pdf-export-mode');
 
 			dateElements.forEach((el) => {
 				el.classList.add('pdf-export-mode');
@@ -146,7 +147,8 @@ export default function Home() {
 				foreignObjectRendering: false
 			});
 
-			// Убираем временный класс
+			// Убираем временные классы
+			posterElement.classList.remove('pdf-export-mode');
 			dateElements.forEach((el) => {
 				el.classList.remove('pdf-export-mode');
 			});
@@ -188,6 +190,16 @@ export default function Home() {
 		} catch (error) {
 			console.error('Ошибка при создании PDF:', error);
 			alert('Произошла ошибка при создании PDF файла');
+
+			// Убираем классы в случае ошибки
+			const posterElement = document.querySelector('.moscow-poster-container');
+			if (posterElement) {
+				posterElement.classList.remove('pdf-export-mode');
+				const dateElements = posterElement.querySelectorAll('.poster-date-underline');
+				dateElements.forEach((el) => {
+					el.classList.remove('pdf-export-mode');
+				});
+			}
 		}
 	};
 
@@ -203,8 +215,13 @@ export default function Home() {
 		}
 
 		try {
-			// Временно добавляем класс для увеличенного отступа
+			// Временно добавляем классы для экспорта в PNG
 			const dateElements = element.querySelectorAll('.poster-date-underline');
+			const posterContainer = element.querySelector('.moscow-poster-container');
+
+			if (posterContainer) {
+				posterContainer.classList.add('export-mode');
+			}
 
 			dateElements.forEach((el) => {
 				el.classList.add('export-mode');
@@ -220,7 +237,10 @@ export default function Home() {
 				height: element.offsetHeight,
 			});
 
-			// Убираем временный класс
+			// Убираем временные классы
+			if (posterContainer) {
+				posterContainer.classList.remove('export-mode');
+			}
 			dateElements.forEach((el) => {
 				el.classList.remove('export-mode');
 			});
@@ -236,6 +256,17 @@ export default function Home() {
 		} catch (error) {
 			console.error('Ошибка при экспорте PNG:', error);
 			alert('Ошибка при создании PNG: ' + (error instanceof Error ? error.message : String(error)));
+
+			// Убираем классы в случае ошибки
+			const posterContainer = element.querySelector('.moscow-poster-container');
+			const dateElements = element.querySelectorAll('.poster-date-underline');
+
+			if (posterContainer) {
+				posterContainer.classList.remove('export-mode');
+			}
+			dateElements.forEach((el) => {
+				el.classList.remove('export-mode');
+			});
 		}
 	};
 

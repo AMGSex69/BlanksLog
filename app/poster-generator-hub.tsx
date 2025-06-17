@@ -107,13 +107,13 @@ const MoscowLogo = () => (
 
 export default function PosterGeneratorHub() {
 	const [posterData, setPosterData] = useState<PosterData>({
-		date1: "15 мая",
-		time1Start: "18:30",
-		time1End: "20:30",
-		date2: "16 мая",
-		time2Start: "16:00",
-		time2End: "18:00",
-		phone: "8 (499) 652-62-11",
+		date1: "",
+		time1Start: "",
+		time1End: "",
+		date2: "",
+		time2Start: "",
+		time2End: "",
+		phone: "",
 	})
 
 	const [templates, setTemplates] = useState<Template[]>([])
@@ -341,7 +341,7 @@ export default function PosterGeneratorHub() {
 										id="date1"
 										value={posterData.date1}
 										onChange={(e) => handleInputChange("date1", e.target.value)}
-										placeholder="15 мая"
+										placeholder="дд/мм"
 										className="text-lg"
 									/>
 								</div>
@@ -352,7 +352,7 @@ export default function PosterGeneratorHub() {
 											id="time1Start"
 											value={posterData.time1Start}
 											onChange={(e) => handleInputChange("time1Start", e.target.value)}
-											placeholder="18:30"
+											placeholder="--:--"
 										/>
 									</div>
 									<div>
@@ -361,7 +361,7 @@ export default function PosterGeneratorHub() {
 											id="time1End"
 											value={posterData.time1End}
 											onChange={(e) => handleInputChange("time1End", e.target.value)}
-											placeholder="20:30"
+											placeholder="--:--"
 										/>
 									</div>
 								</div>
@@ -377,7 +377,7 @@ export default function PosterGeneratorHub() {
 										id="date2"
 										value={posterData.date2}
 										onChange={(e) => handleInputChange("date2", e.target.value)}
-										placeholder="16 мая"
+										placeholder="дд/мм"
 										className="text-lg"
 									/>
 								</div>
@@ -388,7 +388,7 @@ export default function PosterGeneratorHub() {
 											id="time2Start"
 											value={posterData.time2Start}
 											onChange={(e) => handleInputChange("time2Start", e.target.value)}
-											placeholder="16:00"
+											placeholder="--:--"
 										/>
 									</div>
 									<div>
@@ -397,7 +397,7 @@ export default function PosterGeneratorHub() {
 											id="time2End"
 											value={posterData.time2End}
 											onChange={(e) => handleInputChange("time2End", e.target.value)}
-											placeholder="18:00"
+											placeholder="--:--"
 										/>
 									</div>
 								</div>
@@ -507,20 +507,22 @@ export default function PosterGeneratorHub() {
 										<div className="text-center mb-5 space-y-3">
 											<div>
 												<div style={{ fontSize: "14px", fontWeight: "bold", textDecoration: "underline", marginBottom: "2px" }}>
-													{posterData.date1}
+													{posterData.date1 || "дд/мм"}
 												</div>
 												<div style={{ fontSize: "11px" }}>
-													с {posterData.time1Start} до {posterData.time1End}
+													с {posterData.time1Start || "--:--"} до {posterData.time1End || "--:--"}
 												</div>
 											</div>
-											<div>
-												<div style={{ fontSize: "14px", fontWeight: "bold", textDecoration: "underline", marginBottom: "2px" }}>
-													{posterData.date2}
+											{(posterData.date2 || posterData.time2Start || posterData.time2End) && (
+												<div>
+													<div style={{ fontSize: "14px", fontWeight: "bold", textDecoration: "underline", marginBottom: "2px" }}>
+														{posterData.date2 || "дд/мм"}
+													</div>
+													<div style={{ fontSize: "11px" }}>
+														с {posterData.time2Start || "--:--"} до {posterData.time2End || "--:--"}
+													</div>
 												</div>
-												<div style={{ fontSize: "11px" }}>
-													с {posterData.time2Start} до {posterData.time2End}
-												</div>
-											</div>
+											)}
 										</div>
 
 										{/* Основной текст */}
@@ -542,7 +544,7 @@ export default function PosterGeneratorHub() {
 										<div className="text-center" style={{ fontSize: "9px" }}>
 											<div className="mb-1">По всем вопросам обращайтесь</div>
 											<div>
-												по телефону: <span style={{ fontWeight: "bold" }}>{posterData.phone}</span>
+												по телефону: <span style={{ fontWeight: "bold" }}>{posterData.phone || "8 (499) 652-62-11"}</span>
 											</div>
 										</div>
 									</div>
@@ -803,6 +805,9 @@ async function createMoscowMeetingsPDF(data: PosterData): Promise<Uint8Array> {
 	doc.setFont("helvetica", "bold")
 	doc.text("Уважаемые жители!", pageWidth / 2, margin + 70, { align: "center" })
 
+	// Проверяем, есть ли вторая дата
+	const hasSecondDate = data.date2 && data.date2.trim() !== "" && data.time2Start && data.time2End
+
 	// Первая дата
 	doc.setTextColor(0, 0, 0)
 	doc.setFontSize(18)
@@ -813,18 +818,20 @@ async function createMoscowMeetingsPDF(data: PosterData): Promise<Uint8Array> {
 	doc.setFont("helvetica", "normal")
 	doc.text(`с ${data.time1Start} до ${data.time1End}`, pageWidth / 2, margin + 110, { align: "center" })
 
-	// Вторая дата
-	doc.setFontSize(18)
-	doc.setFont("helvetica", "bold")
-	doc.text(data.date2, pageWidth / 2, margin + 130, { align: "center" })
+	// Вторая дата (только если она заполнена)
+	if (hasSecondDate) {
+		doc.setFontSize(18)
+		doc.setFont("helvetica", "bold")
+		doc.text(data.date2, pageWidth / 2, margin + 130, { align: "center" })
 
-	doc.setFontSize(12)
-	doc.setFont("helvetica", "normal")
-	doc.text(`с ${data.time2Start} до ${data.time2End}`, pageWidth / 2, margin + 140, { align: "center" })
+		doc.setFontSize(12)
+		doc.setFont("helvetica", "normal")
+		doc.text(`с ${data.time2Start} до ${data.time2End}`, pageWidth / 2, margin + 140, { align: "center" })
+	}
 
 	// Основной текст
 	doc.setFontSize(11)
-	let yPos = margin + 165
+	let yPos = hasSecondDate ? margin + 165 : margin + 135 // Поднимаем текст, если нет второй даты
 	const lineHeight = 6
 
 	const mainText = [

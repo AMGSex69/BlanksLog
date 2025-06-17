@@ -10,7 +10,7 @@ interface DateInfo {
 interface TextContentProps {
 	dates: {
 		first: DateInfo;
-		second: DateInfo;
+		second?: DateInfo;
 	};
 	phone: string;
 }
@@ -31,16 +31,40 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 
 	// Проверяем, одинаковое ли время
 	const isSameTime = () => {
-		return dates.first.timeStart === dates.second.timeStart &&
-			dates.first.timeEnd === dates.second.timeEnd;
+		if (!dates.second) return false;
+
+		// Если у второй даты не указано время, используем время первой даты
+		const secondTimeStart = dates.second.timeStart || dates.first.timeStart;
+		const secondTimeEnd = dates.second.timeEnd || dates.first.timeEnd;
+
+		return dates.first.timeStart === secondTimeStart &&
+			dates.first.timeEnd === secondTimeEnd;
+	};
+
+	// Проверяем, есть ли вторая дата (не пустая)
+	const hasSecondDate = () => {
+		return dates.second &&
+			dates.second.date &&
+			dates.second.date.trim() !== "";
+	};
+
+	// Получаем время для второй даты (если не указано, используем время первой)
+	const getSecondDateTime = () => {
+		if (!dates.second) return { timeStart: '', timeEnd: '' };
+
+		return {
+			timeStart: dates.second.timeStart || dates.first.timeStart,
+			timeEnd: dates.second.timeEnd || dates.first.timeEnd
+		};
 	};
 
 	// Генерируем контент для дат
 	const generateDateContent = () => {
-		if (isSameTime()) {
+		// Если есть вторая дата и время одинаковое (или у второй даты не указано время)
+		if (hasSecondDate() && isSameTime()) {
 			const timeStr = `с ${dates.first.timeStart} до ${dates.first.timeEnd}`;
 
-			if (areDatesConsecutive(dates.first.date, dates.second.date)) {
+			if (areDatesConsecutive(dates.first.date, dates.second!.date)) {
 				// Если даты идут подряд
 				return (
 					<div
@@ -53,7 +77,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 					>
 						<div className="flex justify-center">
 							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
-								{dates.first.date.toLowerCase()}-{dates.second.date.toLowerCase()}
+								{dates.first.date.toLowerCase()}-{dates.second!.date.toLowerCase()}
 								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 							</div>
 						</div>
@@ -75,12 +99,12 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 						style={{
 							width: '400px',
 							left: '97px',
-							top: '265px'
+							top: '240px'
 						}}
 					>
 						<div className="flex justify-center">
 							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
-								{dates.first.date.toLowerCase()} и {dates.second.date.toLowerCase()}
+								{dates.first.date.toLowerCase()} и {dates.second!.date.toLowerCase()}
 								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 							</div>
 						</div>
@@ -95,8 +119,39 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 					</div>
 				);
 			}
+		}
+
+		// Если только одна дата
+		if (!hasSecondDate()) {
+			return (
+				<div
+					className="absolute flex flex-col items-center"
+					style={{
+						width: '400px',
+						left: '97px',
+						top: '240px'
+					}}
+				>
+					<div className="flex justify-center">
+						<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+							{dates.first.date.toLowerCase()}
+							<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
+						</div>
+					</div>
+					<div
+						className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+						style={{
+							marginTop: '20px'
+						}}
+					>
+						с {dates.first.timeStart} до {dates.first.timeEnd}
+					</div>
+				</div>
+			);
 		} else {
-			// Если время разное
+			// Если время разное (и у второй даты указано свое время)
+			const secondTime = getSecondDateTime();
+
 			return (
 				<>
 					{/* Контейнер для центрирования */}
@@ -148,7 +203,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 								}}
 							>
 								<div className="relative whitespace-nowrap">
-									{dates.second.date}
+									{dates.second!.date}
 									<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
 								</div>
 							</div>
@@ -162,7 +217,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 								marginTop: '25px'
 							}}
 						>
-							с {dates.second.timeStart} до {dates.second.timeEnd}
+							с {secondTime.timeStart} до {secondTime.timeEnd}
 						</div>
 					</div>
 				</>
@@ -187,13 +242,13 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 				<div
 					className="absolute w-full text-center"
 					style={{
-						top: isSameTime() ? '380px' : '420px'
+						top: (!hasSecondDate() || isSameTime()) ? '380px' : '420px'
 					}}
 				>
 					<p
 						className="text-[32px]"
 						style={{
-							lineHeight: isSameTime() ? '42px' : '39px'
+							lineHeight: (!hasSecondDate() || isSameTime()) ? '42px' : '39px'
 						}}
 					>
 						состоятся поквартирные обходы
@@ -205,7 +260,7 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 					<p
 						className="text-[32px] mt-1"
 						style={{
-							lineHeight: isSameTime() ? '42px' : '39px'
+							lineHeight: (!hasSecondDate() || isSameTime()) ? '42px' : '39px'
 						}}
 					>
 						<span className="font-bold">«Электронный дом»</span>

@@ -1,15 +1,175 @@
 import React from "react";
 import Image from "next/image";
 
+interface DateInfo {
+	date: string;
+	timeStart: string;
+	timeEnd: string;
+}
+
 interface TextContentProps {
 	dates: {
-		first: { date: string; time: string };
-		second: { date: string; time: string };
+		first: DateInfo;
+		second: DateInfo;
 	};
 	phone: string;
 }
 
 export default function MoscowPoster({ dates, phone }: TextContentProps) {
+	// Проверяем, идут ли даты подряд
+	const areDatesConsecutive = (date1: string, date2: string) => {
+		// Разбиваем строки дат на компоненты
+		const [day1, month1] = date1.toLowerCase().split(' ');
+		const [day2, month2] = date2.toLowerCase().split(' ');
+
+		// Если месяцы разные, даты точно не последовательные
+		if (month1 !== month2) return false;
+
+		// Проверяем, что дни идут последовательно
+		return parseInt(day2) - parseInt(day1) === 1;
+	};
+
+	// Проверяем, одинаковое ли время
+	const isSameTime = () => {
+		return dates.first.timeStart === dates.second.timeStart &&
+			dates.first.timeEnd === dates.second.timeEnd;
+	};
+
+	// Генерируем контент для дат
+	const generateDateContent = () => {
+		if (isSameTime()) {
+			const timeStr = `с ${dates.first.timeStart} до ${dates.first.timeEnd}`;
+
+			if (areDatesConsecutive(dates.first.date, dates.second.date)) {
+				// Если даты идут подряд
+				return (
+					<div
+						className="absolute flex flex-col items-center"
+						style={{
+							width: '400px',
+							left: '97px',
+							top: '265px'
+						}}
+					>
+						<div className="flex justify-center">
+							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+								{dates.first.date.toLowerCase()}-{dates.second.date.toLowerCase()}
+								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
+							</div>
+						</div>
+						<div
+							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+							style={{
+								marginTop: '20px'
+							}}
+						>
+							{timeStr}
+						</div>
+					</div>
+				);
+			} else {
+				// Если даты не подряд, но время одинаковое
+				return (
+					<div
+						className="absolute flex flex-col items-center"
+						style={{
+							width: '400px',
+							left: '97px',
+							top: '265px'
+						}}
+					>
+						<div className="flex justify-center">
+							<div className="relative font-bold text-[36px] leading-[44px] whitespace-nowrap">
+								{dates.first.date.toLowerCase()} и {dates.second.date.toLowerCase()}
+								<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
+							</div>
+						</div>
+						<div
+							className="flex justify-center text-[34px] leading-[41px] whitespace-nowrap"
+							style={{
+								marginTop: '20px'
+							}}
+						>
+							{timeStr}
+						</div>
+					</div>
+				);
+			}
+		} else {
+			// Если время разное
+			return (
+				<>
+					{/* Контейнер для центрирования */}
+					<div
+						className="absolute"
+						style={{
+							width: '350px',
+							left: '122px',
+							top: '220px'
+						}}
+					>
+						{/* Первая дата */}
+						<div className="flex justify-center">
+							<div
+								className="font-bold text-[36px] leading-[44px] relative"
+								style={{
+									height: '26px',
+								}}
+							>
+								<div className="relative whitespace-nowrap">
+									{dates.first.date}
+									<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
+								</div>
+							</div>
+						</div>
+
+						{/* Первое время */}
+						<div
+							className="flex justify-center text-[34px] leading-[41px]"
+							style={{
+								height: '25px',
+								marginTop: '25px'
+							}}
+						>
+							с {dates.first.timeStart} до {dates.first.timeEnd}
+						</div>
+
+						{/* Вторая дата */}
+						<div
+							className="flex justify-center"
+							style={{
+								marginTop: '10px'
+							}}
+						>
+							<div
+								className="font-bold text-[36px] leading-[44px] relative"
+								style={{
+									height: '26px',
+								}}
+							>
+								<div className="relative whitespace-nowrap">
+									{dates.second.date}
+									<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
+								</div>
+							</div>
+						</div>
+
+						{/* Второе время */}
+						<div
+							className="flex justify-center text-[34px] leading-[41px]"
+							style={{
+								height: '25px',
+								marginTop: '25px'
+							}}
+						>
+							с {dates.second.timeStart} до {dates.second.timeEnd}
+						</div>
+					</div>
+				</>
+			);
+		}
+	};
+
 	return (
 		<div className="relative w-[595.3px] h-[841.89px]">
 			<div className="absolute inset-0">
@@ -17,67 +177,11 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 					src="/images/header-reference.png"
 					alt="Шаблон объявления"
 					fill
+					priority
 					style={{ objectFit: 'contain' }}
 				/>
 
-				{/* Даты */}
-				{/* Первая дата */}
-				<div
-					className="absolute flex items-center font-bold text-[36px] leading-[44px]"
-					style={{
-						width: '119px',
-						height: '26px',
-						left: '237.7px',
-						top: '244.5px'
-					}}
-				>
-					<div className="relative">
-						{dates.first.date}
-						<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
-					</div>
-				</div>
-
-				{/* Первое время */}
-				<div
-					className="absolute flex items-center text-[34px] leading-[41px]"
-					style={{
-						width: '273px',
-						height: '25px',
-						left: '160.7px',
-						top: '290.5px'
-					}}
-				>
-					{dates.first.time}
-				</div>
-
-				{/* Вторая дата */}
-				<div
-					className="absolute flex items-center font-bold text-[36px] leading-[44px]"
-					style={{
-						width: '120px',
-						height: '26px',
-						left: '237.7px',
-						top: '325.5px'
-					}}
-				>
-					<div className="relative">
-						{dates.second.date}
-						<div className="absolute bottom-[-4px] left-0 w-full h-[2px] bg-black"></div>
-					</div>
-				</div>
-
-				{/* Второе время */}
-				<div
-					className="absolute flex items-center text-[34px] leading-[41px]"
-					style={{
-						width: '267px',
-						height: '25px',
-						left: '160.7px',
-						top: '371.5px'
-					}}
-				>
-					{dates.second.time}
-				</div>
+				{generateDateContent()}
 
 				{/* Основной текст */}
 				<div className="absolute w-full top-[420px] text-center">

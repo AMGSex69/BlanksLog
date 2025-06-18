@@ -527,7 +527,7 @@ export default function PosterGeneratorHub() {
 
 										{/* Основной текст */}
 										<div className="text-center mb-6" style={{ fontSize: "10px", lineHeight: "1.3" }}>
-											<div className="mb-1">состоятся поквартирные обходы</div>
+											<div className="mb-1">Состоятся поквартирные обходы</div>
 											<div className="mb-1">сотрудников платформы</div>
 											<div className="mb-1">Правительства Москвы</div>
 											<div className="mb-2" style={{ fontWeight: "bold" }}>
@@ -835,7 +835,7 @@ async function createMoscowMeetingsPDF(data: PosterData): Promise<Uint8Array> {
 	const lineHeight = 6
 
 	const mainText = [
-		"состоятся поквартирные обходы",
+		"Состоятся поквартирные обходы",
 		"сотрудников платформы",
 		"Правительства Москвы",
 		"«Электронный дом»",

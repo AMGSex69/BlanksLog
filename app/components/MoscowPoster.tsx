@@ -237,18 +237,12 @@ export default function MoscowPoster({ dates, phone }: TextContentProps) {
 							lineHeight: (!hasSecondDate() || isSameTime()) ? '42px' : '39px'
 						}}
 					>
-						состоятся поквартирные обходы
+						Состоятся поквартирные обходы
 						<br />
 						сотрудников платформы
 						<br />
 						Правительства Москвы
-					</p>
-					<p
-						className="text-[32px] mt-1"
-						style={{
-							lineHeight: (!hasSecondDate() || isSameTime()) ? '42px' : '39px'
-						}}
-					>
+						<br />
 						<span className="font-bold">«Электронный дом»</span>
 						<br />
 						с целью <span className="font-bold">сбора бюллетеней</span> в
